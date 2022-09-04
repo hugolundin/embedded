@@ -1,0 +1,5 @@
+if (${BOARD} STREQUAL "PICO")
+    add_subdirectory(pico)
+else()
+    add_subdirectory(host)
+endif()

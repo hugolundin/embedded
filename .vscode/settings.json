@@ -1,0 +1,34 @@
+
+{
+    "cmake.environment": {
+        "PICO_SDK_PATH": "/Users/hugolundin/Developer/github/raspberrypi/pico-sdk",
+        "FREERTOS_KERNEL_PATH": "/Users/hugolundin/Developer/github/FreeRTOS/FreeRTOS-Kernel",
+        "UNITY_PATH": "/Users/hugolundin/Developer/github/ThrowTheSwitch/Unity"
+    },
+
+    "cmake.statusbar.advanced": {
+        "debug": {
+            "visibility": "hidden"
+        },
+        "launch": {
+            "visibility": "hidden"
+        },
+        "build": {
+            "visibility": "hidden"
+        },
+        "buildTarget": {
+            "visibility": "hidden"
+        }
+    },
+
+    "cmake.buildBeforeRun": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build/${env:BUILD_DIRECTORY}",
+    "cortex-debug.showRTOS": false,
+    "cortex-debug.openocdPath": "/usr/local/bin/openocd",
+    "files.associations": {
+        "*.c.rl": ".rl",
+        "*.cxx": "cpp",
+        "*.*html": "html",
+        "stdlib.h": "c"
+    }
+}
