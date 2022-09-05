@@ -8,4 +8,5 @@ add_pico_executable(
 target_link_libraries(
     main
     libshared
+    libdrivers
 )
