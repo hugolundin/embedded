@@ -1,4 +1,4 @@
-if (${BOARD} STREQUAL "PICO")
+if (${BOARD} MATCHES "PICO")
     add_subdirectory(pico)
 else()
     add_subdirectory(host)

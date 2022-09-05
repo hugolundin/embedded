@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-if (${BOARD} STREQUAL "PICO")
+if (${BOARD} MATCHES "PICO")
     message(STATUS "Board: pico")
 
     set(CMAKE_C_COMPILER "/usr/local/bin/arm-none-eabi-gcc")
@@ -23,7 +23,7 @@ endif()
 
 project(embedded C CXX ASM)
 
-if (${BOARD} STREQUAL "PICO")
+if (${BOARD} MATCHES "PICO")
     pico_sdk_init()
 
     function(add_pico_executable EXECUTABLE_NAME)
@@ -35,13 +35,19 @@ if (${BOARD} STREQUAL "PICO")
             ${ARGN}
         )
 
-        add_custom_target(
-            upload_${EXECUTABLE_NAME}
-            # https://github.com/majbthrd/pico-debug/blob/master/howto/openocd.md
-            openocd -f board/pico-debug.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
-            # openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/${elf_file} verify reset exit"
-            DEPENDS ${elf_file}
-        )
+        if (${DEBUGGER} MATCHES "PICO-DEBUG")
+            add_custom_target(
+                upload_${EXECUTABLE_NAME}
+                openocd -f board/pico-debug.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
+                DEPENDS ${elf_file}
+            )
+        else()
+            add_custom_target(
+                upload_${EXECUTABLE_NAME}
+                openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
+                DEPENDS ${elf_file}
+            )
+        endif()
 
         add_custom_target(
             debug_${EXECUTABLE_NAME}
@@ -62,12 +68,10 @@ endif()
 
 add_subdirectory(src)
 
-# if ($ENV{BOARD} == "PICO")
-#     message(INFO, "No tests configured.")
-# else()
-#     include(CTest)
-#     add_subdirectory($ENV{UNITY_PATH} unity)
-#     add_subdirectory(tests)
+if (NOT ${BOARD} MATCHES "PICO")
+    include(CTest)
+    add_subdirectory($ENV{UNITY_PATH} unity)
+    add_subdirectory(tests)
 
-#     message(INFO, "Tests configured.")
-# endif()
+    message(STATUS "Tests added")
+endif()
