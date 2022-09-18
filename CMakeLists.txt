@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
+set(PICO_BOARD pico_w)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -34,20 +35,33 @@ if (${BOARD} MATCHES "PICO")
             ${EXECUTABLE_NAME}
             ${ARGN}
         )
+        
+        add_custom_target(
+            upload_${EXECUTABLE_NAME}
+            openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
+            DEPENDS ${elf_file}
+        )
 
-        if (${DEBUGGER} MATCHES "PICO-DEBUG")
-            add_custom_target(
-                upload_${EXECUTABLE_NAME}
-                openocd -f board/pico-debug.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
-                DEPENDS ${elf_file}
-            )
-        else()
-            add_custom_target(
-                upload_${EXECUTABLE_NAME}
-                openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
-                DEPENDS ${elf_file}
-            )
-        endif()
+        add_custom_target(
+            gdb_${EXECUTABLE_NAME}
+            printf "arm-none-eabi-gdb --init-command=${PROJECT_SOURCE_DIR}/.gdbinit ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file}"
+            DEPENDS ${elf_file}
+        )
+
+
+        # if (${DEBUGGER} MATCHES "PICO-DEBUG")
+        #     add_custom_target(
+        #         upload_${EXECUTABLE_NAME}
+        #         openocd -f board/pico-debug.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
+        #         DEPENDS ${elf_file}
+        #     )
+        # else()
+        #     add_custom_target(
+        #         upload_${EXECUTABLE_NAME}
+        #         openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -c "program ${PROJECT_SOURCE_DIR}/build/pico/src/boards/pico/${elf_file} verify reset exit"
+        #         DEPENDS ${elf_file}
+        #     )
+        # endif()
 
         add_custom_target(
             debug_${EXECUTABLE_NAME}
@@ -62,6 +76,7 @@ if (${BOARD} MATCHES "PICO")
 
         pico_enable_stdio_usb(${EXECUTABLE_NAME} 0)
         pico_enable_stdio_uart(${EXECUTABLE_NAME} 1)
+        pico_enable_stdio_semihosting(${EXECUTABLE_NAME} 0)
         pico_add_extra_outputs(${EXECUTABLE_NAME})
     endfunction(add_pico_executable)
 endif()

@@ -29,6 +29,7 @@
         "*.c.rl": ".rl",
         "*.cxx": "cpp",
         "*.*html": "html",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "stdbool.h": "c"
     }
 }

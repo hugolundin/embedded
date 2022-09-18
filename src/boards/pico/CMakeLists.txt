@@ -9,4 +9,5 @@ target_link_libraries(
     main
     libshared
     libdrivers
+    pico_cyw43_arch_none
 )

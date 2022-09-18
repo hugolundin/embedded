@@ -6,6 +6,7 @@
         },
         "environmentVariables": {
             "BOARD": "PICO",
+            "DEBUGGER": "PICO_DEBUG",
             "BUILD_DIRECTORY": "pico"
         }
     },
